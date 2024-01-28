@@ -29,14 +29,12 @@ class Game:
     @property
     def current_player(self) -> Player:
         """Returns the current player."""
-
         return self.players[self.current_player_index]
 
     # CREATION METHODS
 
     def create_players(self, count: int) -> list[Player]:
         """Creates the players of the game."""
-
         # Here we can have other options for the players, like their names, colors, etc.
         return [Player(i + 1) for i in range(count)]
 
@@ -74,7 +72,6 @@ class Game:
 
     def play(self):
         """Starts and plays the game."""
-
         try:
             while not self.winner:
                 self.play_turn()
@@ -87,7 +84,6 @@ class Game:
 
     def play_turn(self):
         """Plays a round of the game."""
-
         self.round += 1
         player = self.current_player
 
@@ -115,7 +111,6 @@ class Game:
 
     def correct_positions(self, player: Player):
         """Corrects the position of the given player if he ended up on a special square."""
-
         position = player.position
         new_position = self.board[position]
 
@@ -139,6 +134,5 @@ class Game:
 
     def next_player(self):
         """Moves to the next player."""
-
         next_player_index = (self.current_player_index + 1) % len(self.players)
         self.current_player_index = next_player_index
