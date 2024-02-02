@@ -1,4 +1,4 @@
-# Ladders
+# Ladders and Snakes
 ## Třída Game
 - má pod kontrolou hrací desku i hráče
 - vytvořením instance se načte vše potřebné
