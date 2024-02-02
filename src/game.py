@@ -1,5 +1,5 @@
-from .player import Player
-from .board_config import config
+from src.player import Player
+from src.board_config import config
 
 
 MIN_PLAYERS = 1
@@ -19,7 +19,7 @@ class Game:
 
         self.players: list[Player] = self.create_players(players_count)
 
-        self.start = 0
+        self.user_start = 0
         self.board: list[int] = self.create_board(board_config)
 
         self.current_player_index: int = 0
@@ -31,11 +31,18 @@ class Game:
         """Returns the current player."""
         return self.players[self.current_player_index]
 
+    def user_view_position(self, player: Player) -> int:
+        """Returns the position of the given player from the user's point of view.
+        We need to view the position for the user because the board is zero-indexed in the program, but usually one-indexed for the user.
+        """
+        return player.position + self.user_start
+
     # CREATION METHODS
 
     def create_players(self, count: int) -> list[Player]:
         """Creates the players of the game."""
-        # Here we can have other options for the players, like their names, colors, etc.
+
+        # Here we can have other options for the players, like their nicknames, colors, etc.
         return [Player(i + 1) for i in range(count)]
 
     def create_board(self, board_config: dict) -> list[int]:
@@ -47,9 +54,9 @@ class Game:
         """
 
         try:
-            start = board_config["start"]
-            self.start = start
-            end = board_config["end"]
+            start: int = board_config["start"]
+            self.user_start = start
+            end: int = board_config["end"]
             size = end - start + 1
 
             # fill the board with 0s
@@ -72,6 +79,7 @@ class Game:
 
     def play(self):
         """Starts and plays the game."""
+
         try:
             while not self.winner:
                 self.play_turn()
@@ -84,19 +92,25 @@ class Game:
 
     def play_turn(self):
         """Plays a round of the game."""
+
         self.round += 1
         player = self.current_player
 
-        print(f"Round {self.round}")
+        print(f"\nRound {self.round}")
         print(f"Player {player} turn.")
 
         # player rolls the dice and moves
         square_count = player.move()
         position = player.position
 
+        print(
+            f"{player} rolled the dice and moved by {square_count} squares to the square {self.user_view_position(player)}."
+        )
+
         # check if the player won
         if position == len(self.board) - 1:
             self.winner = player
+            print(f"{player} won!")
             return
 
         # check if the player ended up out of the board
@@ -111,11 +125,15 @@ class Game:
 
     def correct_positions(self, player: Player):
         """Corrects the position of the given player if he ended up on a special square."""
+
         position = player.position
         new_position = self.board[position]
 
         if new_position != position:
             player.move_to(new_position)
+            print(
+                f"{player} ended up on a special square and was moved to square {self.user_view_position(player)}."
+            )
 
         # if the player ended up on the same square as another player,
         # the other player the other player will be moved backwards by one square
@@ -126,13 +144,15 @@ class Game:
             if other_player.position == player.position:
                 other_player.position -= 1
                 print(
-                    f"{other_player} was moved back by one square and is now at square {other_player.position}."
+                    f"{other_player} was moved back by one square and is now at square {self.user_view_position(other_player)}."
                 )
 
                 # check if the other player ended up on a special square again
                 self.correct_positions(other_player)
 
     def next_player(self):
-        """Moves to the next player."""
+        """Sets current player the next player."""
+
         next_player_index = (self.current_player_index + 1) % len(self.players)
         self.current_player_index = next_player_index
+        return self.current_player
