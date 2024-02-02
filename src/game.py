@@ -9,22 +9,42 @@ MAX_PLAYERS = 10
 class Game:
     """Represents a game of Ladders and Snakes."""
 
-    def __init__(self, players_count: int, board_config: dict = config):
-        """Initializes a new game with the given number of players."""
+    def __init__(
+        self,
+        players_count: int,
+        board_config: dict = config,
+        wait_for_user: bool = True,
+    ):
+        """Initializes a new game with the given number of players.
+        Raises:
+            ValueError: If the number of players is not within the allowed range.
+            ValueError: If the board config is invalid.
+        """
 
-        if not MIN_PLAYERS <= players_count <= MAX_PLAYERS:
-            raise ValueError(
-                f"Minimum of players for this game is {MIN_PLAYERS} and maximum is {MAX_PLAYERS}."
-            )
+        try:
+            if not MIN_PLAYERS <= players_count <= MAX_PLAYERS:
+                raise ValueError(
+                    f"""Minimum of players for this game is {MIN_PLAYERS} and maximum is {MAX_PLAYERS}. You entered {players_count}.
+                    If you want to change the limits, you can change the constants MIN_PLAYERS and MAX_PLAYERS in the game.py."""
+                )
 
-        self.players: list[Player] = self.create_players(players_count)
+            self.wait_for_user: bool = wait_for_user
+            self.players: list[Player] = self.create_players(players_count)
 
-        self.user_start = 0
-        self.board: list[int] = self.create_board(board_config)
+            self.user_start = 0
+            self.board: list[int] = self.create_board(board_config)
 
-        self.current_player_index: int = 0
-        self.round: int = 0
-        self.winner: Player = None
+            print("Wait for user: ", wait_for_user)
+            self.current_player_index: int = 0
+            self.round: int = 0
+            self.winner: Player = None
+            self.created_properly: bool = True
+
+        except Exception as exception:
+            print("Game was not created properly.")
+            print(exception)
+            print("Please try again with valid parameters.")
+            raise
 
     @property
     def current_player(self) -> Player:
@@ -43,7 +63,7 @@ class Game:
         """Creates the players of the game."""
 
         # Here we can have other options for the players, like their nicknames, colors, etc.
-        return [Player(i + 1) for i in range(count)]
+        return [Player(i + 1, self.wait_for_user) for i in range(count)]
 
     def create_board(self, board_config: dict) -> list[int]:
         """Loads the board from the given config file.
@@ -54,24 +74,46 @@ class Game:
         """
 
         try:
+            # check if the board config is valid before creating the board
+            if (
+                "start" not in board_config
+                or "end" not in board_config
+                or "special_squares" not in board_config
+            ):
+                raise ValueError("Invalid board config: Missing required keys.")
+
+            # processing the board config
             start: int = board_config["start"]
             self.user_start = start
             end: int = board_config["end"]
             size = end - start + 1
 
-            # fill the board with 0s
+            # fill the board with the default values
             board: list[int] = [i for i in range(size)]
 
+            # set the special squares
             for user_index_from, user_index_to in board_config[
                 "special_squares"
             ].items():
                 board_index_from = int(user_index_from) - start
                 board_index_to = user_index_to - start
-
                 board[board_index_from] = board_index_to
 
+            # check if the board is valid after creating it
+            if board[0] != 0:
+                raise ValueError(
+                    "Invalid board: The first square must start at index 0."
+                )
+
+            if board[-1] != end - start:
+                raise ValueError()
+
+            for square in board:
+                if not 0 <= square < size:
+                    raise ValueError()
+
         except Exception as exception:
-            raise ValueError("Invalid board config file.") from exception
+            raise exception
 
         return board
 
@@ -83,12 +125,14 @@ class Game:
         try:
             while not self.winner:
                 self.play_turn()
-                self.next_player()
+                self.set_next_player()
 
             print(f"Player {self.winner.number} won!")
+            return self.winner
 
-        except Exception as exception:
-            print(exception)
+        except Exception:
+            print("Something went wrong while playing the game.")
+            raise
 
     def play_turn(self):
         """Plays a round of the game."""
@@ -111,7 +155,7 @@ class Game:
         if position == len(self.board) - 1:
             self.winner = player
             print(f"{player} won!")
-            return
+            return self.winner
 
         # check if the player ended up out of the board
         if position >= len(self.board):
@@ -150,7 +194,7 @@ class Game:
                 # check if the other player ended up on a special square again
                 self.correct_positions(other_player)
 
-    def next_player(self):
+    def set_next_player(self):
         """Sets current player the next player."""
 
         next_player_index = (self.current_player_index + 1) % len(self.players)

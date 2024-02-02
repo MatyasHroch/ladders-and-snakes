@@ -4,7 +4,7 @@ DICE_MAX = 6
 
 
 def roll_dice(dice_max=DICE_MAX, repeat=True):
-    """Rolls a dice and returns the result."""
+    """Rolls an imaginary dice and returns the result."""
 
     result = random.randint(1, dice_max)
 
