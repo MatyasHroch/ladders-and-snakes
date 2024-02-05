@@ -17,7 +17,9 @@
 - ukázková konfigurace je v souboru `board_config.py`, kde je slovník, který je zároveň výchozí konfigurací
 
 ## Rozdělení odpovědnosti
-- hra řekne hráči, aby provedl svůj tah (v tuto chvíli pouze hození kostkou a posunutí své pozice)
+- hra řekne hráči, aby provedl svůj tah
+  - v tuto chvíli pouze hození kostkou a posunutí své pozice
+  - později by se mohlo jednat o něco komplexnějšího
 - poté zkontroluje hráčovu pozici a podle toho, kde skončil, zareaguje
 - úloha hráče a hry je tedy logicky oddělená
 
