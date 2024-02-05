@@ -20,11 +20,10 @@
 - hra řekne hráči, aby provedl svůj tah (v tuto chvíli pouze hození kostkou a posunutí své pozice)
 - poté zkontroluje hráčovu pozici a podle toho, kde skončil, zareaguje
 - úloha hráče a hry je tedy logicky oddělená
-- do budoucna tak může být jednoduše rozšiřitelná jedna či druhá metoda
 
 ## Možná rozšíření, ke kterým řešení směřuje
 - zobrazení pro uživatele by mohlo být grafické (vzhledem k povaze zadání jsem zůstal u jednoduchých výpisů)
-- z třídy Player by mohla být zděděna novými třídami RealPlayer a MpcPlayer
+- třída Player by mohla být zděděna novými třídami RealPlayer a MpcPlayer
   - ty by mohly implementovat jen ty metody, které budou pro MPC hráče a reálného hráče rozdílné
   - pro hru zůstanou hráči stále typu Player
   - prozatím je možnost vytvoření reálného a MPC hráče závislá pouze na argumentu `wait_for_player`
