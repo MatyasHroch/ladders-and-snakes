@@ -194,9 +194,10 @@ class Game:
                 # check if the other player ended up on a special square again
                 self.correct_positions(other_player)
 
-    def set_next_player(self):
+    def set_next_player(self) -> Player:
         """Sets current player the next player."""
 
         next_player_index = (self.current_player_index + 1) % len(self.players)
         self.current_player_index = next_player_index
+
         return self.current_player
