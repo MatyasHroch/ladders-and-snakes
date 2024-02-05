@@ -2,7 +2,9 @@
 ## Třída Game
 - má pod kontrolou hrací desku i hráče
 - vytvořením instance se načte vše potřebné
-  - je možné předat různé argumenty pro úpravu běhu hry
+- je možné předat různé argumenty pro úpravu běhu hry
+  - `wait_for_user` -> pokud je na True, tak se před každým tahem hráče čeká na interakci uživatele
+  - `board_config` -> jde o konfuguraci hrací desky, ta je totiž modulární, podrobněji později
 - zavoláním metody `play` se hra spustí
 - hra vyvolává výjimky, především při nesprávných argumentech
 
